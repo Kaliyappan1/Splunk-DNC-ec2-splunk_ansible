@@ -126,7 +126,7 @@ resource "aws_instance" "Splunk_sh_idx_hf" {
   user_data = file("splunk-setup.sh")
 
   tags = {
-    Name          = element(["${var.instance_name}-SearchHead", "${var.instance_name}-Indexer", "${var.instance_name}-HF"], count.index)
+    Name = replace(element(["${var.instance_name}-SearchHead", "${var.instance_name}-Indexer", "${var.instance_name}-HF"], count.index), " ", "-")
     AutoStop      = "true"
     Owner         = var.usermail
     UserEmail     = var.usermail
@@ -150,7 +150,7 @@ resource "aws_instance" "Splunk_uf" {
   user_data = file("splunk-setup-UF.sh")
 
   tags = {
-    Name          = "${var.instance_name}-UF"
+    Name = "${replace(var.instance_name, " ", "-")}-UF"
     AutoStop      = "true"
     Owner         = var.usermail
     UserEmail     = var.usermail
@@ -163,17 +163,16 @@ resource "aws_instance" "Splunk_uf" {
 # ✅ Generate Ansible Inventory File
 resource "local_file" "inventory" {
   content = <<EOT
-[search_head]
-${aws_instance.Splunk_sh_idx_hf[0].tags.Name} ansible_host=${aws_instance.Splunk_sh_idx_hf[0].public_ip} ansible_user=ec2-user private_ip=${aws_instance.Splunk_sh_idx_hf[0].private_ip} ansible_ssh_private_key_file=${abspath("${path.module}/${local.final_key_name}.pem")}
+${replace(aws_instance.Splunk_sh_idx_hf[0].tags.Name, " ", "-")} ansible_host=${aws_instance.Splunk_sh_idx_hf[0].public_ip} ansible_user=ec2-user private_ip=${aws_instance.Splunk_sh_idx_hf[0].private_ip} ansible_ssh_private_key_file=${abspath("${path.module}/${local.final_key_name}.pem")}
 
 [indexer]
-${aws_instance.Splunk_sh_idx_hf[1].tags.Name} ansible_host=${aws_instance.Splunk_sh_idx_hf[1].public_ip} ansible_user=ec2-user private_ip=${aws_instance.Splunk_sh_idx_hf[1].private_ip} ansible_ssh_private_key_file=${abspath("${path.module}/${local.final_key_name}.pem")}
+${replace(aws_instance.Splunk_sh_idx_hf[1].tags.Name, " ", "-")} ansible_host=${aws_instance.Splunk_sh_idx_hf[1].public_ip} ansible_user=ec2-user private_ip=${aws_instance.Splunk_sh_idx_hf[1].private_ip} ansible_ssh_private_key_file=${abspath("${path.module}/${local.final_key_name}.pem")}
 
 [heavy_forwarder]
-${aws_instance.Splunk_sh_idx_hf[2].tags.Name} ansible_host=${aws_instance.Splunk_sh_idx_hf[2].public_ip} ansible_user=ec2-user private_ip=${aws_instance.Splunk_sh_idx_hf[2].private_ip} ansible_ssh_private_key_file=${abspath("${path.module}/${local.final_key_name}.pem")}
+${replace(aws_instance.Splunk_sh_idx_hf[2].tags.Name, " ", "-")} ansible_host=${aws_instance.Splunk_sh_idx_hf[2].public_ip} ansible_user=ec2-user private_ip=${aws_instance.Splunk_sh_idx_hf[2].private_ip} ansible_ssh_private_key_file=${abspath("${path.module}/${local.final_key_name}.pem")}
 
 [universal_forwarder]
-${aws_instance.Splunk_uf.tags.Name} ansible_host=${aws_instance.Splunk_uf.public_ip} ansible_user=ec2-user private_ip=${aws_instance.Splunk_uf.private_ip} ansible_ssh_private_key_file=${abspath("${path.module}/${local.final_key_name}.pem")}
+${replace(aws_instance.Splunk_uf.tags.Name, " ", "-")} ansible_host=${aws_instance.Splunk_uf.public_ip} ansible_user=ec2-user private_ip=${aws_instance.Splunk_uf.private_ip} ansible_ssh_private_key_file=${abspath("${path.module}/${local.final_key_name}.pem")}
 
 [splunk:children]
 search_head
