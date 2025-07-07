@@ -156,6 +156,7 @@ resource "aws_instance" "Splunk_uf" {
     Owner         = var.usermail
     UserEmail     = var.usermail
     RunQuotaHours = var.quotahours
+    HoursPerDay   = var.hoursperday
     Category      = var.category
     PlanStartDate = var.planstartdate
   }
