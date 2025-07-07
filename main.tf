@@ -164,6 +164,7 @@ resource "aws_instance" "Splunk_uf" {
 # ✅ Generate Ansible Inventory File
 resource "local_file" "inventory" {
   content = <<EOT
+[search_head]
 ${replace(aws_instance.Splunk_sh_idx_hf[0].tags.Name, " ", "-")} ansible_host=${aws_instance.Splunk_sh_idx_hf[0].public_ip} ansible_user=ec2-user private_ip=${aws_instance.Splunk_sh_idx_hf[0].private_ip} ansible_ssh_private_key_file=${abspath("${path.module}/${local.final_key_name}.pem")}
 
 [indexer]
