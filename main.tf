@@ -205,3 +205,10 @@ output "final_key_name" {
 output "s3_key_path" {
   value = "${var.usermail}/keys/${local.final_key_name}.pem"
 }
+
+output "instance_id" {
+  value = concat(
+    aws_instance.Splunk_sh_idx_hf[*].id,
+    [aws_instance.Splunk_uf.id]
+  )
+}
